@@ -41,8 +41,9 @@ This covers what real sysadmin work actually looks like: backing up and restorin
 
 Installed Windows Server Backup on both DCs via Server Manager, ran a manual System State backup on DC01, and configured a scheduled daily backup at 11 PM. The System State captures everything AD needs: NTDS.dit, SYSVOL, registry, and boot files. Key constraint learned: the backup destination cannot be on the same volume as the OS.
 
-![WSB Backup Success](screenshots/03-wsb-backup-success.png)
-![WSB Schedule](screenshots/04-wsb-schedule.png)
+<img width="1024" height="724" alt="WSB DC1" src="https://github.com/user-attachments/assets/0c4cc2a5-2a2e-4f73-9077-b28ee27c67d4" />
+<img width="1022" height="729" alt="WSB Backup date" src="https://github.com/user-attachments/assets/029e746c-9646-43d0-9a3f-99baba0c34cb" />
+
 
 ---
 
@@ -69,8 +70,8 @@ Simulated a deleted OU disaster — removed `FR_Sales` and all 5 users, forced r
 
 Enabled the AD Recycle Bin through ADAC — the modern way to recover deleted objects without touching a backup or DSRM. Deleted Helene Mercier (France Country Manager) and restored her in seconds from the Deleted Objects container with all attributes intact. Also recovered the full FR_Sales OU. Critical order: restore the parent OU before restoring the objects inside it, or users land in LostAndFound.
 
-![ADAC Deleted Objects](screenshots/10-adac-deleted-objects.png)
-![Helene Mercier Restored](screenshots/11-helene-mercier-restored.png)
+<img width="1026" height="727" alt="Delete User Helene" src="https://github.com/user-attachments/assets/f4f9d2dc-a36e-4f68-b494-8efbaa6eaa1a" />
+<img width="1022" height="727" alt="Restore User Helene" src="https://github.com/user-attachments/assets/4eacad45-aed9-4f6a-a0bd-fd652d39ce1c" />
 
 ---
 
@@ -78,8 +79,8 @@ Enabled the AD Recycle Bin through ADAC — the modern way to recover deleted ob
 
 Created two Password Settings Objects through ADAC's Password Settings Container. **PSO-IT-Management-HighSecurity** (Precedence 10): 16-character minimum, lockout after 3 attempts — applied to IT and Management groups. **PSO-StandardStaff** (Precedence 20): 12-character minimum, lockout after 5 attempts — applied to Domain Users. Lower precedence number wins when a user is covered by multiple PSOs. Verified correct application per user using ADAC's View resultant password settings.
 
-![PSO Container](screenshots/12-pso-container.png)
-![Resultant PSO Pierre Dubois](screenshots/13-pso-resultant-pierre.png)
+<img width="1023" height="724" alt="PSO Strong password IT" src="https://github.com/user-attachments/assets/5c714a26-24e2-46a3-99e3-b90d03b8faef" />
+
 
 ---
 
