@@ -1,0 +1,2 @@
+# Enterprise-Active-Directory-Recovery-Resilience-Engineering-Lab
+Enterprise AD lab simulating real enterprise scenarios: System State backup and recovery, authoritative object restore via ntdsutil, FSMO transfer and seizure, AD Recycle Bin, PSO configuration, inter-site replication diagnostics, offline database defragmentation, and advanced GPO modelling across a dual-DC Windows Server 2022 domain.
