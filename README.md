@@ -1,4 +1,5 @@
-# 🏢 On-Premises Active Directory Lab
+# 🏢 Enterprise-Active-Directory-Recovery-Resilience-Engineering-Lab
+
 ### Dual-Site Windows Server 2022 | Backup, Recovery, FSMO & M365 Integration | AZ-800 Aligned
 Enterprise AD lab simulating real enterprise scenarios: System State backup and recovery, authoritative object restore via ntdsutil, FSMO transfer and seizure, AD Recycle Bin, PSO configuration, inter-site replication diagnostics, offline database defragmentation, and advanced GPO modelling across a dual-DC Windows Server 2022 domain.
 
