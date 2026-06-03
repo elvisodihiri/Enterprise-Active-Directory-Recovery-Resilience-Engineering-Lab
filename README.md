@@ -31,7 +31,9 @@ This covers what real sysadmin work actually looks like: backing up and restorin
 
 ---
 
-![AD Sites and Services Overview](screenshots/01-sites-services-overview.png)
+<img width="1021" height="728" alt="Sites server" src="https://github.com/user-attachments/assets/938d3185-9b85-405b-a4bb-ce406ad20034" />
+<img width="1025" height="726" alt="Computer and users" src="https://github.com/user-attachments/assets/9d2eeed7-eb5c-408a-86f4-32db568f1b98" />
+
 
 ---
 
