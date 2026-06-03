@@ -1,10 +1,9 @@
-# Enterprise-Active-Directory-Recovery-Resilience-Engineering-Lab
+# 🏢 On-Premises Active Directory Lab
+### Dual-Site Windows Server 2022 | Backup, Recovery, FSMO & M365 Integration | AZ-800 Aligned
 Enterprise AD lab simulating real enterprise scenarios: System State backup and recovery, authoritative object restore via ntdsutil, FSMO transfer and seizure, AD Recycle Bin, PSO configuration, inter-site replication diagnostics, offline database defragmentation, and advanced GPO modelling across a dual-DC Windows Server 2022 domain.
 
 
 
-# 🏢 On-Premises Active Directory Lab
-### Dual-Site Windows Server 2022 | Backup, Recovery, FSMO & M365 Integration | AZ-800 Aligned
 
 ---
 
@@ -80,3 +79,89 @@ Created two Password Settings Objects through ADAC's Password Settings Container
 
 ![PSO Container](screenshots/12-pso-container.png)
 ![Resultant PSO Pierre Dubois](screenshots/13-pso-resultant-pierre.png)
+
+---
+
+### Phase 6 — FSMO Roles
+
+Verified all five FSMO role holders across three tools: ADUC Operations Masters, Active Directory Domains and Trusts, and the Schema MMC snap-in. Transferred the PDC Emulator and Domain Naming Master to DC02 to simulate a maintenance window, then transferred both back. Understood the key distinction — Transfer (graceful, both DCs live) versus Seize (emergency only; if you seize, the old DC must never come back online).
+
+![PDC Emulator Transfer](screenshots/14-fsmo-pdc-transfer.png)
+![Domain Naming Master](screenshots/15-fsmo-domain-naming.png)
+
+---
+
+### Phase 7 — Replication Monitoring
+
+Forced replication between sites using AD Sites and Services (Replicate Now on the NTDS Settings connection object). Ran `repadmin /replsummary`, `/showrepl`, and `/syncall /Ade` to verify health and push updates across all partitions. Filtered the Directory Service event log for replication Event IDs — 1394 (healthy), 1311 (topology error), 2042 (tombstone lifetime exceeded).
+
+![repadmin Output](screenshots/16-repadmin-output.png)
+![Directory Service Log](screenshots/17-event-viewer-directory-service.png)
+
+---
+
+### Phase 8 — AD Database Maintenance
+
+Booted into DSRM and ran an integrity check on NTDS.dit via `ntdsutil → files → integrity`. Followed with an offline defragmentation using `compact to C:\NTDS-Compact` to physically shrink the database file — online defrag reorganises data but doesn't reduce file size. Replaced the original file, removed superseded transaction logs, rebooted, and confirmed replication resumed cleanly.
+
+![NTDS Folder](screenshots/18-ntds-folder.png)
+![ntdsutil Compact](screenshots/19-ntdsutil-compact.png)
+
+---
+
+### Phase 9 — Group Policy Advanced
+
+Used the **GPO Results Wizard** to identify exactly which policy was blocking Control Panel for a France user — pinpointed to FR_UserPolicy in seconds. Used the **GPO Modeling Wizard** to simulate a new USB restriction policy before deployment. Practised Link Order control and configured Block Inheritance on FR_Management so restrictive France_Staff policies didn't affect managers. Used Enforced to override inheritance blocks for security-critical GPOs.
+
+![GPO Results](screenshots/20-gpo-results-pierre.png)
+![GPO Link Order](screenshots/21-gpo-link-order.png)
+![Block Inheritance](screenshots/22-block-inheritance.png)
+
+---
+
+### France Branch Office
+
+Renamed the default site to London-HQ, created Paris-Branch, defined subnets for both, set up the London-Paris-Link at a 15-minute interval, and moved DC02 into Paris-Branch. Created 20 France users across 5 departments with full Organisation tab attributes set — these sync to Microsoft 365 and power dynamic group rules in Entra ID. Ran the Delegation of Control Wizard to give the France IT Security Analyst rights over France users only, with no access to UK accounts. Linked FR_PasswordPolicy at domain root and FR_UserPolicy to the France_Staff OU.
+
+![AD Sites France Setup](screenshots/01-sites-services-overview.png)
+![France OU Structure](screenshots/02-aduc-ou-tree.png)
+
+---
+
+### Microsoft 365 & Entra ID Integration
+
+Updated Entra Connect OU filtering to include France_Staff, triggered a manual sync, and all 20 France users appeared in the Microsoft 365 Admin Centre with on-prem attributes intact. Configured Address Book Policies in Exchange Online so France and UK users see only their own colleagues in Outlook and Teams. Assigned licences and confirmed full access to Teams, Outlook, SharePoint, and OneDrive — all signing in with `@northwinddata.com`.
+
+![M365 France Users](screenshots/23-m365-france-users.png)
+![Entra Connect Sync](screenshots/24-entra-connect-sync.png)
+
+---
+
+## Troubleshooting Scenarios Worked Through
+
+- WSB backup failing with 0x80070001 — destination volume permissions; fixed by running WSB as Administrator
+- DSRM login rejected — missing `.\` prefix; DSRM requires a local account login, not a domain account
+- Authoritative restore not sticking — rebooted before running ntdsutil; DC02's deletion replicated back and wiped the restore; repeated in correct order
+- PSO not applying — PSO was linked to an OU, not a security group; PSOs only work on group and user objects
+- DC02 unresponsive after site move — site link not configured with both sites; fixed in DEFAULTIPSITELINK properties
+- GPO not applying despite showing in GPMC — Authenticated Users removed from Security Filtering; re-added via Delegation tab
+- Recycle Bin users landing in LostAndFound — restored users before restoring their parent OU; always restore the container first
+
+---
+
+## Key Skills Demonstrated
+
+`Active Directory` · `Windows Server 2022` · `ADUC` · `ADAC` · `AD Sites & Services` · `Windows Server Backup` · `System State` · `DSRM` · `ntdsutil` · `Authoritative Restore` · `AD Recycle Bin` · `Fine-Grained Password Policies` · `FSMO Roles` · `repadmin` · `NTDS.dit` · `GPMC` · `Group Policy Results` · `Group Policy Modeling` · `Entra Connect` · `Microsoft 365` · `Exchange Online` · `Hybrid Identity` · `AZ-800` · `AZ-801`
+
+---
+
+## Certification Alignment
+
+- **AZ-800** — Administering Windows Server Hybrid Core Infrastructure
+- **AZ-801** — Configuring Windows Server Hybrid Advanced Services
+- **SC-300** — Microsoft Identity and Access Administrator
+- **AZ-104** — Microsoft Azure Administrator (hybrid identity sections)
+
+---
+
+*Built as part of my transition into IT infrastructure and cloud identity engineering. More lab projects at [github.com/elvisodihiri](https://github.com/elvisodihiri)*
