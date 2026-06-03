@@ -150,6 +150,8 @@ Updated Entra Connect OU filtering to include France_Staff, triggered a manual s
 - DC02 unresponsive after site move — site link not configured with both sites; fixed in DEFAULTIPSITELINK properties
 - GPO not applying despite showing in GPMC — Authenticated Users removed from Security Filtering; re-added via Delegation tab
 - Recycle Bin users landing in LostAndFound — restored users before restoring their parent OU; always restore the container first
+<img width="1021" height="593" alt="CMD replication troubleshooting" src="https://github.com/user-attachments/assets/5b166d1b-0dab-48f8-9124-8595748365b7" />
+<img width="1015" height="727" alt="replication resolved screenshot" src="https://github.com/user-attachments/assets/5ad5c7da-302b-49c4-9e8b-039e1d28e94d" />
 
 ---
 
