@@ -40,11 +40,13 @@ This covers what real sysadmin work actually looks like: backing up and restorin
 
 
 ---
-
+<br/>
+<br/>
 <img width="1021" height="728" alt="Sites server" src="https://github.com/user-attachments/assets/938d3185-9b85-405b-a4bb-ce406ad20034" />
 
 <img width="1025" height="726" alt="Computer and users" src="https://github.com/user-attachments/assets/9d2eeed7-eb5c-408a-86f4-32db568f1b98" />
-
+<br/>
+<br/>
 
 ---
 
@@ -55,14 +57,17 @@ This covers what real sysadmin work actually looks like: backing up and restorin
 Installed Windows Server Backup on both DCs via Server Manager, ran a manual System State backup on DC01, and configured a scheduled daily backup at 11 PM. The System State captures everything AD needs: NTDS.dit, SYSVOL, registry, and boot files. Key constraint learned: the backup destination cannot be on the same volume as the OS.
 
 
-
+<br/>
+<br/>
 <img width="1024" height="724" alt="WSB DC1" src="https://github.com/user-attachments/assets/0c4cc2a5-2a2e-4f73-9077-b28ee27c67d4" />
+<br/>
 
 <img width="1022" height="729" alt="WSB Backup date" src="https://github.com/user-attachments/assets/029e746c-9646-43d0-9a3f-99baba0c34cb" />
 
 
 
-
+<br/>
+<br/>
 
 ---
 
@@ -102,10 +107,12 @@ Enabled the AD Recycle Bin through ADAC — the modern way to recover deleted ob
 
 
 <img width="1026" height="727" alt="Delete User Helene" src="https://github.com/user-attachments/assets/f4f9d2dc-a36e-4f68-b494-8efbaa6eaa1a" />
-
+<br/>
+<br/>
 <img width="1022" height="727" alt="Restore User Helene" src="https://github.com/user-attachments/assets/4eacad45-aed9-4f6a-a0bd-fd652d39ce1c" />
 
-
+<br/>
+<br/>
 
 ---
 
@@ -140,7 +147,8 @@ Verified all five FSMO role holders across three tools: ADUC Operations Masters,
 <img width="451" height="453" alt="RID" src="https://github.com/user-attachments/assets/bb25a413-a4ff-40de-9b40-344fa7004f11" />
 
 
-
+<br/>
+<br/>
 ---
 
 
@@ -156,7 +164,8 @@ Forced replication between sites using AD Sites and Services (Replicate Now on t
 <img width="1015" height="727" alt="replication resolved screenshot" src="https://github.com/user-attachments/assets/e4e106ab-0b50-42d3-a53a-4edbf5ed0ef6" />
 
 
-
+<br/>
+<br/>
 ---
 
 
@@ -171,7 +180,8 @@ Booted into DSRM and ran an integrity check on NTDS.dit via `ntdsutil → files 
 
 <img width="962" height="515" alt="Database Maintenance" src="https://github.com/user-attachments/assets/8d117b84-393a-47d9-b33e-c5aba86ce42c" />
 
-
+<br/>
+<br/>
 
 ---
 
@@ -192,7 +202,8 @@ Used the **GPO Results Wizard** to identify exactly which policy was blocking Co
 ![Block Inheritance](screenshots/22-block-inheritance.png)
 
 
-
+<br/>
+<br/>
 ---
 
 
@@ -206,13 +217,15 @@ Renamed the default site to London-HQ, created Paris-Branch, defined subnets for
 
 
 <img width="746" height="530" alt="iP Time replicate" src="https://github.com/user-attachments/assets/75cee0c6-9f6b-4b27-906d-e8cff307cd04" />
-
+<br/>
+<br/>
 <img width="1025" height="726" alt="Computer and users" src="https://github.com/user-attachments/assets/c475d253-319d-49a3-a850-b387747690c2" />
 
 
 
 
-
+<br/>
+<br/>
 ---
 
 
@@ -230,7 +243,8 @@ Updated Entra Connect OU filtering to include France_Staff, triggered a manual s
 ![Entra Connect Sync](screenshots/24-entra-connect-sync.png)
 
 
-
+<br/>
+<br/>
 ---
 
 
