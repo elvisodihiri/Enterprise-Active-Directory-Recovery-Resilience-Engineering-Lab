@@ -1,169 +1,87 @@
-# 🏢 Enterprise-Active-Directory-Recovery-Resilience-Engineering-Lab
-
+# 🏢 Enterprise Active Directory Recovery & Resilience Engineering Lab
 ### Dual-Site Windows Server 2022 | Backup, Recovery, FSMO & M365 Integration | AZ-800 Aligned
-Enterprise AD lab simulating real enterprise scenarios: System State backup and recovery, authoritative object restore via ntdsutil, FSMO transfer and seizure, AD Recycle Bin, PSO configuration, inter-site replication diagnostics, offline database defragmentation, and advanced GPO modelling across a dual-DC Windows Server 2022 domain.
 
-
-
-
----
-
-## What I Built
-
-I built a production-style on-premises Active Directory environment for a fictional organisation, **Northwind Data Systems** (`northwinddata.com`) — a full dual-site setup with domain controllers in London and Paris, 40 users, AD Sites and Services, and a complete connection to Microsoft 365 via Entra Connect.
-
-This covers what real sysadmin work actually looks like: backing up and restoring a DC, recovering deleted objects, managing FSMO roles, monitoring replication between sites, and troubleshooting Group Policy. Every phase was hands-on — I broke things and fixed them.
+<p align="center">
+  <img src="https://img.shields.io/badge/Windows%20Server-2022-blue?style=for-the-badge&logo=microsoft&logoColor=white" alt="Windows Server 2022">
+  <img src="https://img.shields.io/badge/Microsoft%20Entra-Connected-0078D4?style=for-the-badge&logo=microsoft&logoColor=white" alt="Entra ID">
+  <img src="https://img.shields.io/badge/AZ--800%20%7C%20801-Aligned-purple?style=for-the-badge" alt="AZ-800 Aligned">
+  <img src="https://img.shields.io/badge/SC--300-Identity-green?style=for-the-badge" alt="SC-300">
+</p>
 
 ---
 
-## Lab Environment
+## 📌 Executive Summary
+An enterprise-grade, dual-site hybrid Active Directory infrastructure simulating real-world disaster recovery, resilience engineering, and identity lifecycle management for a fictional organization, **Northwind Data Systems** (`northwinddata.com`). 
 
-| Component | Detail |
-|---|---|
-| Domain | northwinddata.com |
-| DC01 | Windows Server 2022 — London HQ |
-| DC02 | Windows Server 2022 — Paris Branch |
-| AD Sites | London-HQ / Paris-Branch |
-| Site Link | London-Paris-Link — 15-minute replication interval |
-| Users | 20 UK staff + 20 France staff |
-| Cloud | Microsoft 365 / Entra ID via Entra Connect |
-| Tools | ADUC, ADAC, GPMC, AD Sites & Services, WSB, ntdsutil, repadmin |
+This project bridges the gap between on-premises system administration and modern cloud identity, moving beyond standard deployment into hands-on failure state resolution, database optimization, and cross-platform synchronization.
 
 ---
 
-<img width="1021" height="728" alt="Sites server" src="https://github.com/user-attachments/assets/938d3185-9b85-405b-a4bb-ce406ad20034" />
-<img width="1025" height="726" alt="Computer and users" src="https://github.com/user-attachments/assets/9d2eeed7-eb5c-408a-86f4-32db568f1b98" />
+## ⚙️ Lab Architecture & Specifications
 
+<div align="center">
 
----
+| Component | Technical Specification |
+| :--- | :--- |
+| **Domain Name** | `northwinddata.com` |
+| **DC01 (London HQ)** | Windows Server 2022 — Core Operations Master |
+| **DC02 (Paris Branch)** | Windows Server 2022 — Regional Replica |
+| **AD Sites Topology** | `London-HQ` / `Paris-Branch` via `London-Paris-Link` (15-min replication) |
+| **User Directory** | 40 Multi-Departmental Staff Accounts (20 UK / 20 FR) with full OAB schemas |
+| **Hybrid Bridge** | Microsoft 365 / Azure Entra ID Integration via Microsoft Entra Connect |
+| **Management Stack** | ADUC, ADAC, GPMC, AD Sites & Services, WSB, `ntdsutil`, `repadmin` |
 
-## What I Covered
+</div>
 
-### Phase 1 — Windows Server Backup
-
-Installed Windows Server Backup on both DCs via Server Manager, ran a manual System State backup on DC01, and configured a scheduled daily backup at 11 PM. The System State captures everything AD needs: NTDS.dit, SYSVOL, registry, and boot files. Key constraint learned: the backup destination cannot be on the same volume as the OS.
-
-<img width="1024" height="724" alt="WSB DC1" src="https://github.com/user-attachments/assets/0c4cc2a5-2a2e-4f73-9077-b28ee27c67d4" />
-<img width="1022" height="729" alt="WSB Backup date" src="https://github.com/user-attachments/assets/029e746c-9646-43d0-9a3f-99baba0c34cb" />
-
-
----
-
-### Phase 2 — Non-Authoritative Restore
-
-Booted DC01 into Directory Services Restore Mode via `msconfig`, restored the System State from backup using WSB, then rebooted normally. DC02 automatically replicated current data back to DC01, bringing it fully up to date. Verified with `repadmin /replsummary` and Event IDs 1394 and 1168 in the Directory Service log.
-
-<img width="978" height="361" alt="repadmin " src="https://github.com/user-attachments/assets/71e2e1b0-f49e-4f32-9811-d408d040504e" />
+<p align="center">
+  <img width="49%" alt="Sites server" src="https://github.com/user-attachments/assets/938d3185-9b85-405b-a4bb-ce406ad20034" />
+  <img width="49%" alt="Computer and users" src="https://github.com/user-attachments/assets/9d2eeed7-eb5c-408a-86f4-32db568f1b98" />
+</p>
 
 ---
 
-### Phase 3 — Authoritative Restore
+## 🛠️ Core Engineering Phases
 
-Simulated a deleted OU disaster — removed `FR_Sales` and all 5 users, forced replication to DC02 so both DCs confirmed the deletion. Recovery is two steps: restore from backup in DSRM, then run `ntdsutil` to mark restored objects as authoritative before rebooting. This stamps them with a version number higher than DC02's, so they replicate outward instead of getting overwritten. Verified FR_Sales and all users were back on both DCs after reboot.
+<details>
+<summary><b>Phase 1 — Bare-Metal & System State Backup Engineering</b></summary>
+<br>
 
-![ntdsutil Authoritative Restore](screenshots/08-ntdsutil-auth-restore.png)
-![FR_Sales Restored on DC02](screenshots/09-dc02-fr-sales-restored.png)
+Implemented baseline backup architecture utilizing **Windows Server Backup (WSB)** across both production domain controllers. 
+* Designed and scheduled daily incremental System State captures at 23:00 to back up critical stateful data (`NTDS.dit`, `SYSVOL`, registry, boot configurations).
+* **Key Constraint Resolved:** Enforced architectural separation ensuring backup targets reside on completely independent physical/logical volumes separate from the operating system volume to prevent single-point-of-failure storage degradation.
 
----
+<p align="center">
+  <img width="49%" alt="WSB DC1" src="https://github.com/user-attachments/assets/0c4cc2a5-2a2e-4f73-9077-b28ee27c67d4" />
+  <img width="49%" alt="WSB Backup date" src="https://github.com/user-attachments/assets/029e746c-9646-43d0-9a3f-99baba0c34cb" />
+</p>
+</details>
 
-### Phase 4 — AD Recycle Bin
+<details>
+<summary><b>Phase 2 — Non-Authoritative Directory Database Restoration</b></summary>
+<br>
 
-Enabled the AD Recycle Bin through ADAC — the modern way to recover deleted objects without touching a backup or DSRM. Deleted Helene Mercier (France Country Manager) and restored her in seconds from the Deleted Objects container with all attributes intact. Also recovered the full FR_Sales OU. Critical order: restore the parent OU before restoring the objects inside it, or users land in LostAndFound.
+Simulated local operating system recovery scenarios without impacting the wider multi-master replication topology.
+* Intercepted standard boot sequences to initialize **Directory Services Restore Mode (DSRM)** via `msconfig`.
+* Executed local System State rollbacks utilizing the WSB subsystem.
+* Post-initialization, verified safe catch-up replication where **DC02** automatically updated **DC01** back to production head via outbound multi-master delta synchronization.
+* **Verification:** Logged healthy state utilizing `repadmin /replsummary` and parsed Directory Service Event Logs for Event IDs `1394` and `1168`.
 
-<img width="1026" height="727" alt="Delete User Helene" src="https://github.com/user-attachments/assets/f4f9d2dc-a36e-4f68-b494-8efbaa6eaa1a" />
-<img width="1022" height="727" alt="Restore User Helene" src="https://github.com/user-attachments/assets/4eacad45-aed9-4f6a-a0bd-fd652d39ce1c" />
+<p align="center">
+  <img width="80%" alt="repadmin " src="https://github.com/user-attachments/assets/71e2e1b0-f49e-4f32-9811-d408d040504e" />
+</p>
+</details>
 
----
+<details>
+<summary><b>Phase 3 — Authoritative Object & OU Disaster Recovery</b></summary>
+<br>
 
-### Phase 5 — Fine-Grained Password Policies
+Simulated a catastrophic structural deletion where the entire `FR_Sales` Organizational Unit (OU) and its underlying security principals were completely purged and replicated forest-wide.
+* Isolated the target DC within **DSRM** environments to perform base recovery.
+* Utilized the `ntdsutil` command-line utility to target the specific distinguished name (DN) of the deleted container, executing an **Authoritative Restore**.
+* This explicitly increments the USN (Update Sequence Number) attributes of the selected objects past the current epoch of all other domain controllers.
+* Forced forest-wide replication outbound upon normal reboot, ensuring the restored objects successfully overrode the deletion states on remaining replica partners.
 
-Created two Password Settings Objects through ADAC's Password Settings Container. **PSO-IT-Management-HighSecurity** (Precedence 10): 16-character minimum, lockout after 3 attempts — applied to IT and Management groups. **PSO-StandardStaff** (Precedence 20): 12-character minimum, lockout after 5 attempts — applied to Domain Users. Lower precedence number wins when a user is covered by multiple PSOs. Verified correct application per user using ADAC's View resultant password settings.
-
-<img width="1023" height="724" alt="PSO Strong password IT" src="https://github.com/user-attachments/assets/5c714a26-24e2-46a3-99e3-b90d03b8faef" />
-
-
----
-
-### Phase 6 — FSMO Roles
-
-Verified all five FSMO role holders across three tools: ADUC Operations Masters, Active Directory Domains and Trusts, and the Schema MMC snap-in. Transferred the PDC Emulator and Domain Naming Master to DC02 to simulate a maintenance window, then transferred both back. Understood the key distinction — Transfer (graceful, both DCs live) versus Seize (emergency only; if you seize, the old DC must never come back online).
-
-<img width="451" height="453" alt="RID" src="https://github.com/user-attachments/assets/bb25a413-a4ff-40de-9b40-344fa7004f11" />
-
----
-
-### Phase 7 — Replication Monitoring
-
-Forced replication between sites using AD Sites and Services (Replicate Now on the NTDS Settings connection object). Ran `repadmin /replsummary`, `/showrepl`, and `/syncall /Ade` to verify health and push updates across all partitions. Filtered the Directory Service event log for replication Event IDs — 1394 (healthy), 1311 (topology error), 2042 (tombstone lifetime exceeded).
-
-<img width="1015" height="727" alt="replication resolved screenshot" src="https://github.com/user-attachments/assets/e4e106ab-0b50-42d3-a53a-4edbf5ed0ef6" />
-
----
-
-### Phase 8 — AD Database Maintenance
-
-Booted into DSRM and ran an integrity check on NTDS.dit via `ntdsutil → files → integrity`. Followed with an offline defragmentation using `compact to C:\NTDS-Compact` to physically shrink the database file — online defrag reorganises data but doesn't reduce file size. Replaced the original file, removed superseded transaction logs, rebooted, and confirmed replication resumed cleanly.
-
-<img width="962" height="515" alt="Database Maintenance" src="https://github.com/user-attachments/assets/8d117b84-393a-47d9-b33e-c5aba86ce42c" />
-
----
-
-### Phase 9 — Group Policy Advanced
-
-Used the **GPO Results Wizard** to identify exactly which policy was blocking Control Panel for a France user — pinpointed to FR_UserPolicy in seconds. Used the **GPO Modeling Wizard** to simulate a new USB restriction policy before deployment. Practised Link Order control and configured Block Inheritance on FR_Management so restrictive France_Staff policies didn't affect managers. Used Enforced to override inheritance blocks for security-critical GPOs.
-
-![GPO Results](screenshots/20-gpo-results-pierre.png)
-![GPO Link Order](screenshots/21-gpo-link-order.png)
-![Block Inheritance](screenshots/22-block-inheritance.png)
-
----
-
-### France Branch Office
-
-Renamed the default site to London-HQ, created Paris-Branch, defined subnets for both, set up the London-Paris-Link at a 15-minute interval, and moved DC02 into Paris-Branch. Created 20 France users across 5 departments with full Organisation tab attributes set — these sync to Microsoft 365 and power dynamic group rules in Entra ID. Ran the Delegation of Control Wizard to give the France IT Security Analyst rights over France users only, with no access to UK accounts. Linked FR_PasswordPolicy at domain root and FR_UserPolicy to the France_Staff OU.
-
-<img width="746" height="530" alt="iP Time replicate" src="https://github.com/user-attachments/assets/75cee0c6-9f6b-4b27-906d-e8cff307cd04" />
-<img width="1025" height="726" alt="Computer and users" src="https://github.com/user-attachments/assets/c475d253-319d-49a3-a850-b387747690c2" />
-
-
----
-
-### Microsoft 365 & Entra ID Integration
-
-Updated Entra Connect OU filtering to include France_Staff, triggered a manual sync, and all 20 France users appeared in the Microsoft 365 Admin Centre with on-prem attributes intact. Configured Address Book Policies in Exchange Online so France and UK users see only their own colleagues in Outlook and Teams. Assigned licences and confirmed full access to Teams, Outlook, SharePoint, and OneDrive — all signing in with `@northwinddata.com`.
-
-![M365 France Users](screenshots/23-m365-france-users.png)
-![Entra Connect Sync](screenshots/24-entra-connect-sync.png)
-
----
-
-## Troubleshooting Scenarios Worked Through
-
-- WSB backup failing with 0x80070001 — destination volume permissions; fixed by running WSB as Administrator
-- DSRM login rejected — missing `.\` prefix; DSRM requires a local account login, not a domain account
-- Authoritative restore not sticking — rebooted before running ntdsutil; DC02's deletion replicated back and wiped the restore; repeated in correct order
-- PSO not applying — PSO was linked to an OU, not a security group; PSOs only work on group and user objects
-- DC02 unresponsive after site move — site link not configured with both sites; fixed in DEFAULTIPSITELINK properties
-- GPO not applying despite showing in GPMC — Authenticated Users removed from Security Filtering; re-added via Delegation tab
-- Recycle Bin users landing in LostAndFound — restored users before restoring their parent OU; always restore the container first
-<img width="1021" height="593" alt="CMD replication troubleshooting" src="https://github.com/user-attachments/assets/5b166d1b-0dab-48f8-9124-8595748365b7" />
-<img width="1015" height="727" alt="replication resolved screenshot" src="https://github.com/user-attachments/assets/5ad5c7da-302b-49c4-9e8b-039e1d28e94d" />
-
----
-
-## Key Skills Demonstrated
-
-`Active Directory` · `Windows Server 2022` · `ADUC` · `ADAC` · `AD Sites & Services` · `Windows Server Backup` · `System State` · `DSRM` · `ntdsutil` · `Authoritative Restore` · `AD Recycle Bin` · `Fine-Grained Password Policies` · `FSMO Roles` · `repadmin` · `NTDS.dit` · `GPMC` · `Group Policy Results` · `Group Policy Modeling` · `Entra Connect` · `Microsoft 365` · `Exchange Online` · `Hybrid Identity` · `AZ-800` · `AZ-801`
-
----
-
-## Certification Alignment
-
-- **AZ-800** — Administering Windows Server Hybrid Core Infrastructure
-- **AZ-801** — Configuring Windows Server Hybrid Advanced Services
-- **SC-300** — Microsoft Identity and Access Administrator
-- **AZ-104** — Microsoft Azure Administrator (hybrid identity sections)
-
----
-
-*Built as part of my transition into IT infrastructure and cloud identity engineering. More lab projects at [github.com/elvisodihiri](https://github.com/elvisodihiri)*
+```cmd
+ntdsutil
+authoritative restore
+restore object "OU=FR_Sales,DC=northwinddata,DC=com"
