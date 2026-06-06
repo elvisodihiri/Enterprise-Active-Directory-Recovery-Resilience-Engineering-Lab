@@ -53,9 +53,7 @@ Installed Windows Server Backup on both DCs via Server Manager, ran a manual Sys
 
 Booted DC01 into Directory Services Restore Mode via `msconfig`, restored the System State from backup using WSB, then rebooted normally. DC02 automatically replicated current data back to DC01, bringing it fully up to date. Verified with `repadmin /replsummary` and Event IDs 1394 and 1168 in the Directory Service log.
 
-![msconfig DSRM](screenshots/05-msconfig-dsrm.png)
-![WSB Recovery Wizard](screenshots/06-wsb-recovery-wizard.png)
-![repadmin Output](screenshots/07-repadmin-replsummary.png)
+<img width="978" height="361" alt="repadmin " src="https://github.com/user-attachments/assets/71e2e1b0-f49e-4f32-9811-d408d040504e" />
 
 ---
 
@@ -90,8 +88,7 @@ Created two Password Settings Objects through ADAC's Password Settings Container
 
 Verified all five FSMO role holders across three tools: ADUC Operations Masters, Active Directory Domains and Trusts, and the Schema MMC snap-in. Transferred the PDC Emulator and Domain Naming Master to DC02 to simulate a maintenance window, then transferred both back. Understood the key distinction — Transfer (graceful, both DCs live) versus Seize (emergency only; if you seize, the old DC must never come back online).
 
-![PDC Emulator Transfer](screenshots/14-fsmo-pdc-transfer.png)
-![Domain Naming Master](screenshots/15-fsmo-domain-naming.png)
+<img width="451" height="453" alt="RID" src="https://github.com/user-attachments/assets/bb25a413-a4ff-40de-9b40-344fa7004f11" />
 
 ---
 
@@ -99,8 +96,7 @@ Verified all five FSMO role holders across three tools: ADUC Operations Masters,
 
 Forced replication between sites using AD Sites and Services (Replicate Now on the NTDS Settings connection object). Ran `repadmin /replsummary`, `/showrepl`, and `/syncall /Ade` to verify health and push updates across all partitions. Filtered the Directory Service event log for replication Event IDs — 1394 (healthy), 1311 (topology error), 2042 (tombstone lifetime exceeded).
 
-![repadmin Output](screenshots/16-repadmin-output.png)
-![Directory Service Log](screenshots/17-event-viewer-directory-service.png)
+<img width="1015" height="727" alt="replication resolved screenshot" src="https://github.com/user-attachments/assets/e4e106ab-0b50-42d3-a53a-4edbf5ed0ef6" />
 
 ---
 
@@ -108,8 +104,7 @@ Forced replication between sites using AD Sites and Services (Replicate Now on t
 
 Booted into DSRM and ran an integrity check on NTDS.dit via `ntdsutil → files → integrity`. Followed with an offline defragmentation using `compact to C:\NTDS-Compact` to physically shrink the database file — online defrag reorganises data but doesn't reduce file size. Replaced the original file, removed superseded transaction logs, rebooted, and confirmed replication resumed cleanly.
 
-![NTDS Folder](screenshots/18-ntds-folder.png)
-![ntdsutil Compact](screenshots/19-ntdsutil-compact.png)
+<img width="962" height="515" alt="Database Maintenance" src="https://github.com/user-attachments/assets/8d117b84-393a-47d9-b33e-c5aba86ce42c" />
 
 ---
 
@@ -127,8 +122,9 @@ Used the **GPO Results Wizard** to identify exactly which policy was blocking Co
 
 Renamed the default site to London-HQ, created Paris-Branch, defined subnets for both, set up the London-Paris-Link at a 15-minute interval, and moved DC02 into Paris-Branch. Created 20 France users across 5 departments with full Organisation tab attributes set — these sync to Microsoft 365 and power dynamic group rules in Entra ID. Ran the Delegation of Control Wizard to give the France IT Security Analyst rights over France users only, with no access to UK accounts. Linked FR_PasswordPolicy at domain root and FR_UserPolicy to the France_Staff OU.
 
-![AD Sites France Setup](screenshots/01-sites-services-overview.png)
-![France OU Structure](screenshots/02-aduc-ou-tree.png)
+<img width="746" height="530" alt="iP Time replicate" src="https://github.com/user-attachments/assets/75cee0c6-9f6b-4b27-906d-e8cff307cd04" />
+<img width="1025" height="726" alt="Computer and users" src="https://github.com/user-attachments/assets/c475d253-319d-49a3-a850-b387747690c2" />
+
 
 ---
 
